@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestion des étudiants</title>
+</head>
+
+<body>
+    <h1>Liste des étudiants</h1>
+    <div>
+        <input type="text" id="champNom" placeholder="Nom"><br><br>
+        <input type="text" id="champPrenom" placeholder="Prénom"><br><br>
+        <button id="btnajouter">ajouter</button>
+    </div>
+
+    <p>Nombre total d'étudiants : <span id="total">0</span></p>
+
+    <ul id="listeEtudiants"></ul>
+
+    <script>
+        let etudiants = [];
+        code = etudiants;
+        let champNom = document.getElementById("champNom");
+        let champPrenom = document.getElementById("champPrenom");
+        let btnAjouter = document.getElementById("btnajouter");
+        let listeEtudiants = document.getElementById("listeEtudiants");
+        let compteur = document.getElementById("total");
+
+        function sauvegarderEtudiants() {
+            localStorage.setItem(code, JSON.stringify(etudiants));
+        }
+
+        function chargerEtudiants() {
+            let donnees = localStorage.getItem(code);
+            if (donnees !== null) {
+                etudiants = JSON.parse(donnees);
+            } else {
+                etudiants = [];
+            }
+        }
+
+        function afficherEtudiants() {
+            listeEtudiants.innerHTML = "";
+
+            etudiants.forEach(function (etudiant) {
+                let li = document.createElement("li");
+
+                let span = document.createElement("span");
+                span.textContent = etudiant.nom + " " + etudiant.prenom;
+
+                let btnSupprimer = document.createElement("button");
+                btnSupprimer.textContent = "Supprimer";
+                btnSupprimer.addEventListener("click", function () {
+                    supprimerEtudiant(etudiant.id);
+                });
+
+                li.appendChild(span);
+                li.appendChild(btnSupprimer);
+                listeEtudiants.appendChild(li);
+            });
+
+            compteur.textContent = etudiants.length;
+        }
+
+        function ajouterEtudiant() {
+            let nom = champNom.value.trim();
+            let prenom = champPrenom.value.trim();
+
+            if (nom === "" || prenom === "") {
+                alert("Veuillez remplir tout les champ.");
+                return;
+            }
+
+            let nouvelEtudiant = {
+                id: Date.now(),
+                nom: nom,
+                prenom: prenom
+            };
+
+            etudiants.push(nouvelEtudiant);
+            sauvegarderEtudiants();
+            afficherEtudiants();
+
+            champNom.value = "";
+            champPrenom.value = "";
+        }
+
+        function supprimerEtudiant(id) {
+            etudiants = etudiants.filter(function (e) {
+                return e.id !== id;
+            });
+
+            sauvegarderEtudiants();
+            afficherEtudiants();
+        }
+
+        btnAjouter.addEventListener("click", ajouterEtudiant);
+
+
+        chargerEtudiants();
+        afficherEtudiants();
+    </script>
+
+</body>
+
+</html>
